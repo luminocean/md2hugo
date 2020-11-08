@@ -58,7 +58,7 @@ func convertMarkdown(srcFilePath string, dstDir string) error {
     defer src.Close()
 
     baseName := strings.TrimSuffix(filepath.Base(srcFilePath), MarkdownExtension)
-    dstFilePath := path.Join(dstDir, baseName+MarkdownExtension)
+    dstFilePath := path.Join(dstDir, baseName + MarkdownExtension)
     Logf("converting %s into %s", srcFilePath, dstFilePath)
 
     dst, err := os.Create(dstFilePath)
@@ -86,7 +86,7 @@ func convertMarkdown(srcFilePath string, dstDir string) error {
     // find and parse tag lines in the format of Bear tags such as "#aa #bb #cc"
     // see https://blog.bear.app/2020/05/getting-started-with-using-and-organizing-tags-in-bear/
     // note that to prevent ambiguity, only the second line in the doc is parsed for tags
-    tagLine := ""
+    var secondLine, tagLine string
     ok = scanner.Scan()
     if err = scanner.Err(); !ok {
         if err != nil {
@@ -94,9 +94,22 @@ func convertMarkdown(srcFilePath string, dstDir string) error {
         }
         // EOF
     } else {
-        tagLine = scanner.Text()
+        secondLine = scanner.Text()
+        // if the second line starts with #, this line is considered as the tag line for tags
+        if strings.HasPrefix(secondLine, "#") {
+            tagLine = secondLine
+        } else {
+            // otherwise this is the first line in the doc body
+            // write to dst immediately
+            if strings.TrimSpace(secondLine) != "" {
+                _, err = dst.WriteString(secondLine + "\n")
+                if err != nil {
+                    return err
+                }
+            }
+        }
     }
-
+    // generate hugo front matter
     yml, err := NewFrontMatter(title, tagLine).YAML()
     if err != nil {
         return err

@@ -12,6 +12,7 @@ func main() {
     app := &cli.App{
         Name:  "md2hugo",
         Usage: "converts your markdown documents into files in Hugo format with front matter",
+        UsageText: "md2hugo src_dir dst_dir",
         Authors: []*cli.Author{
 			{
 				Name:  "luMinO",
@@ -22,6 +23,7 @@ func main() {
             &cli.StringFlag{
             	Name: "tag-base",
             	Aliases: []string{"T"},
+                Usage: "only tags that starts with the given base will be extracted into the result Hugo markdown files",
 				Value: md2hugo.TagBase,
             	Destination: &md2hugo.TagBase,
             },
