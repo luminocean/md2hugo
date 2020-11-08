@@ -4,6 +4,12 @@ Covert your markdown files to Hugo format.
 
 Initially designed for notes exported from [Bear](https://bear.app) but works for any markdown docs.
 
+## Installation
+
+```bash
+GO111MODULE=on go get -v github.com/luminocean/md2hugo/cmd/md2hugo
+```
+
 ## Usage
 
 Use the following command to convert your markdown documents:
